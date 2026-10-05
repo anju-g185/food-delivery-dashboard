@@ -1,0 +1,161 @@
+
+SQL Code in MYsql workbench
+
+
+CREATE DATABASE food_delivery;
+
+
+USE food_delivery;
+
+
+CREATE TABLE orders (
+    Order_ID VARCHAR(20),
+    Order_Date DATE,
+    Customer_ID VARCHAR(20),
+    Restaurant_ID VARCHAR(20),
+    Restaurant_Name VARCHAR(100),
+    City VARCHAR(50),
+    Cuisine VARCHAR(50),
+    Order_Value INT,
+    Delivery_Fee INT,
+    Discount INT,
+    Payment_Method VARCHAR(30),
+    Order_Status VARCHAR(30),
+    Delivery_Time_Min INT,
+    Customer_Rating DECIMAL(3,1),
+    Distance_KM DECIMAL(5,1),
+    Net_Revenue INT
+);
+
+
+
+
+SELECT * 
+FROM orders
+LIMIT 10;
+SELECT COUNT(*) AS Total_Orders
+FROM orders;
+
+
+
+
+ALTER TABLE Orders
+MODIFY Order_Date VARCHAR(20);
+
+
+
+
+SELECT COUNT(*) AS Delivered_Orders
+FROM orders
+WHERE Order_Status = 'Delivered';
+
+
+
+
+SELECT SUM(Net_Revenue) AS Total_Revenue
+FROM orders
+WHERE Order_Status = 'Delivered';
+
+
+
+
+SELECT AVG(Delivery_Time_Min) AS Average_Delivery_Time
+FROM orders
+WHERE Order_Status = 'Delivered';
+
+
+
+
+SELECT
+    City,
+    COUNT(*) AS Total_Orders,
+    SUM(Net_Revenue) AS Revenue
+FROM orders
+WHERE Order_Status = 'Delivered'
+GROUP BY City
+ORDER BY Revenue DESC;
+
+
+
+
+SELECT
+    Restaurant_Name,
+    COUNT(*) AS Total_Orders,
+    SUM(Net_Revenue) AS Revenue
+FROM orders
+WHERE Order_Status = 'Delivered'
+GROUP BY Restaurant_Name
+ORDER BY Revenue DESC
+LIMIT 10;
+
+
+
+
+SELECT
+    Cuisine,
+    COUNT(*) AS Total_Orders,
+    SUM(Net_Revenue) AS Revenue
+FROM orders
+WHERE Order_Status = 'Delivered'
+GROUP BY Cuisine
+ORDER BY Total_Orders DESC;
+SELECT
+    COUNT(*) AS Total_Orders,
+    SUM(
+        CASE
+            WHEN Order_Status = 'Cancelled' THEN 1
+            ELSE 0
+        END
+    ) AS Cancelled_Orders,
+    ROUND(
+        100.0 * SUM(
+            CASE
+                WHEN Order_Status = 'Cancelled' THEN 1
+                ELSE 0
+            END
+        ) / COUNT(*),
+        2
+    ) AS Cancellation_Rate
+FROM orders;
+
+
+
+
+SELECT
+    DATE_FORMAT(Order_Date, '%Y-%m') AS Month,
+    COUNT(*) AS Total_Orders,
+    SUM(Net_Revenue) AS Revenue
+FROM orders
+WHERE Order_Status = 'Delivered'
+GROUP BY DATE_FORMAT(Order_Date, '%Y-%m')
+ORDER BY Month;
+
+
+
+
+SELECT
+    Customer_ID,
+    COUNT(*) AS Total_Orders,
+    SUM(Net_Revenue) AS Total_Spent
+FROM orders
+WHERE Order_Status = 'Delivered'
+GROUP BY Customer_ID
+ORDER BY Total_Spent DESC
+LIMIT 10;
+
+
+
+SELECT
+    City,
+    ROUND(AVG(Delivery_Time_Min), 2) AS Avg_Delivery_Time,
+    ROUND(AVG(Distance_KM), 2) AS Avg_Distance
+FROM orders
+WHERE Order_Status = 'Delivered'
+GROUP BY City
+ORDER BY Avg_Delivery_Time DESC;
+SELECT
+    100.0 * SUM(
+        CASE WHEN Order_Status = 'Cancelled' THEN 1 ELSE 0 END
+    ) / COUNT(*) AS Cancellation_Rate
+FROM Orders;
+
